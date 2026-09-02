@@ -1,0 +1,234 @@
+---
+import { getCollection, getEntry } from 'astro:content'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { newestFirst, onlyPublished } from '../domain/content'
+import NowStrip from '../components/NowStrip.astro'
+import MomentEntry from '../components/MomentEntry.astro'
+import WritingIndex from '../components/WritingIndex.astro'
+import ProjectPreview from '../components/ProjectPreview.astro'
+import PhotoFigure from '../components/PhotoFigure.astro'
+
+const site = await getEntry('settings', 'site')
+const displayName = site?.data.displayName ?? 'Personal Digital Garden'
+
+const moments = newestFirst(onlyPublished(await getCollection('moments'))).slice(0, 3)
+const latestMoment = moments[0]
+
+const writing = newestFirst(onlyPublished(await getCollection('writing'))).slice(0, 4)
+
+const allProjects = await getCollection('projects')
+const selectedIds = site?.data.homepage?.selectedProjects ?? []
+const selectedProjects = selectedIds.flatMap((id) => {
+  const entry = allProjects.find((candidate) => candidate.id === id)
+  return entry && !entry.data.draft ? [entry] : []
+})
+
+const photos = newestFirst(onlyPublished(await getCollection('photos')))
+const openingPhoto = photos[0]?.data.images[0]
+---
+
+<BaseLayout
+  title="Personal Digital Garden"
+  description="A personal digital garden about photography, computer vision, and learning."
+  image={openingPhoto?.src}
+>
+  <section class="home-intro editorial-grid" aria-label="Introduction" data-editorial-section>
+    <div class="home-intro__text">
+      <p class="home-intro__name">{displayName}</p>
+      <h1 class="display-opening">I started with cameras.</h1>
+      <p class="home-intro__continuation">Then I became curious about how machines see.</p>
+      <p class="home-intro__actions">
+        <a class="home-intro__action" href="/work">Selected work</a>
+        {
+          latestMoment && (
+            <a class="home-intro__action" href={`/moments/${latestMoment.id}`}>Latest moment</a>
+          )
+        }
+      </p>
+    </div>
+    {
+      openingPhoto && (
+        <PhotoFigure
+          class="home-intro__photo"
+          src={openingPhoto.src}
+          alt={openingPhoto.alt}
+          width={openingPhoto.width}
+          height={openingPhoto.height}
+          eager
+        />
+      )
+    }
+  </section>
+
+  <div class="editorial-grid">
+    <div class="home-stack">
+      <NowStrip />
+
+      <section aria-labelledby="latest-moments-heading" data-editorial-section>
+        <h2 id="latest-moments-heading" class="home-section-heading">Latest moments</h2>
+        <div class="home-moments">
+          {moments.map((entry) => <MomentEntry entry={entry} />)}
+        </div>
+      </section>
+
+      <section aria-labelledby="latest-writing-heading" data-editorial-section>
+        <h2 id="latest-writing-heading" class="home-section-heading">Latest writing</h2>
+        <WritingIndex entries={writing} />
+      </section>
+
+      <section aria-labelledby="selected-work-heading" data-editorial-section>
+        <h2 id="selected-work-heading" class="home-section-heading">Selected work</h2>
+        <div class="home-projects">
+          {selectedProjects.map((entry) => <ProjectPreview entry={entry} />)}
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="home-closing" aria-label="Photography" data-editorial-section>
+    {
+      openingPhoto && (
+        <PhotoFigure
+          class="home-closing__photo"
+          src={openingPhoto.src}
+          alt={openingPhoto.alt}
+          width={openingPhoto.width}
+          height={openingPhoto.height}
+        />
+      )
+    }
+    <div class="home-closing__quote editorial-grid">
+      <p class="home-closing__lines">
+        <span>Human vision records a moment.</span>
+        <span>Machine vision tries to understand it.</span>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .home-intro {
+    padding-block: var(--space-2xl) var(--space-3xl);
+    align-items: end;
+  }
+
+  .home-intro__text {
+    grid-column: 1 / -1;
+  }
+
+  .home-intro__name {
+    margin-bottom: var(--space-lg);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--stone-text);
+  }
+
+  .home-intro__continuation {
+    margin-top: var(--space-lg);
+    font-family: var(--font-kai);
+    font-size: 1.25rem;
+    line-height: var(--line-height-chinese);
+  }
+
+  .home-intro__actions {
+    display: flex;
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+  }
+
+  .home-intro__action {
+    padding-bottom: var(--space-2xs);
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: color var(--motion-base) var(--ease-out);
+  }
+
+  .home-intro__action:hover {
+    color: var(--moss);
+    border-color: var(--moss);
+  }
+
+  .home-intro__photo {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .home-intro__text {
+      grid-column: 1 / 8;
+    }
+
+    .home-intro__photo {
+      display: block;
+      grid-column: 8 / 13;
+      grid-row: 1;
+      align-self: end;
+      margin-bottom: -3rem;
+    }
+  }
+
+  .home-stack {
+    grid-column: 1 / -1;
+    margin-block: var(--space-3xl);
+  }
+
+  @media (min-width: 768px) {
+    .home-stack {
+      grid-column: 2 / 11;
+    }
+  }
+
+  .home-section-heading {
+    margin-bottom: var(--space-xl);
+    font-family: var(--font-serif-sc);
+    font-size: 1.5rem;
+  }
+
+  .home-section-heading::after {
+    content: '';
+    display: block;
+    width: 3rem;
+    height: 2px;
+    margin-top: var(--space-sm);
+    background: var(--terracotta);
+  }
+
+  .home-moments,
+  .home-projects {
+    display: contents;
+  }
+
+  .home-closing {
+    margin-top: var(--space-3xl);
+  }
+
+  .home-closing__photo {
+    max-width: none;
+  }
+
+  .home-closing__quote {
+    padding-block: var(--space-3xl);
+  }
+
+  .home-closing__lines {
+    grid-column: 1 / -1;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    line-height: 1.4;
+  }
+
+  .home-closing__lines span {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .home-closing__lines {
+      grid-column: 6 / 13;
+      text-align: right;
+    }
+  }
+</style>

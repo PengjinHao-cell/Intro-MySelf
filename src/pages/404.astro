@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title="Page not found — Personal Digital Garden" description="This page does not exist.">
+  <div class="editorial-grid">
+    <div class="not-found">
+      <h1>Page not found</h1>
+      <p class="not-found__text">The page you were looking for is not here.</p>
+      <p class="not-found__action">
+        <a href="/">Back to the garden</a>
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    grid-column: 1 / -1;
+    padding-block: var(--space-3xl) var(--space-4xl);
+  }
+
+  @media (min-width: 768px) {
+    .not-found {
+      grid-column: 2 / 11;
+    }
+  }
+
+  .not-found h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 500;
+  }
+
+  .not-found__text {
+    margin-top: var(--space-md);
+    color: var(--stone-text);
+  }
+
+  .not-found__action {
+    margin-top: var(--space-xl);
+  }
+
+  .not-found__action a {
+    padding-bottom: var(--space-2xs);
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-decoration: none;
+  }
+</style>

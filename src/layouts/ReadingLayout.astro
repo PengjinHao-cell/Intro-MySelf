@@ -1,0 +1,150 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import PhotoFigure from '../components/PhotoFigure.astro'
+
+interface Props {
+  title: string
+  description: string
+  publishedAt?: Date
+  byline?: string[]
+  summary?: string
+  cover?: { src: string; alt: string; width?: number; height?: number }
+  breadcrumb: { href: string; label: string }
+}
+
+const { title, description, publishedAt, byline = [], summary, cover, breadcrumb } = Astro.props
+const dateLabel = publishedAt?.toISOString().slice(0, 10)
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="reading-grid editorial-grid">
+    <article class="reading">
+      <nav class="reading__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href={breadcrumb.href}>{breadcrumb.label}</a>
+      </nav>
+      <h1 class="reading__title">{title}</h1>
+      {
+        dateLabel && (
+          <p class="reading__meta">
+            <time datetime={dateLabel}>{dateLabel}</time>
+            {
+              byline.map((item) => <span>{item}</span>)
+            }
+          </p>
+        )
+      }
+      {
+        summary && <p class="reading__summary">{summary}</p>
+      }
+      {
+        cover && (
+          <PhotoFigure
+            class="reading__cover"
+            src={cover.src}
+            alt={cover.alt}
+            width={cover.width}
+            height={cover.height}
+            eager
+          />
+        )
+      }
+      <div class="reading__body">
+        <slot />
+      </div>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .reading-grid {
+    padding-block: var(--space-2xl) var(--space-4xl);
+  }
+
+  .reading {
+    grid-column: 1 / -1;
+    max-width: var(--measure);
+  }
+
+  @media (min-width: 768px) {
+    .reading {
+      grid-column: 2 / 10;
+    }
+  }
+
+  .reading__breadcrumb {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--stone-text);
+  }
+
+  .reading__breadcrumb a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .reading__breadcrumb a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .reading__title {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+  }
+
+  .reading__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--stone-text);
+  }
+
+  .reading__summary {
+    margin-top: var(--space-lg);
+    font-family: var(--font-kai);
+    font-size: 1.0625rem;
+    line-height: var(--line-height-chinese);
+    color: var(--stone-text);
+  }
+
+  .reading__cover {
+    margin-top: var(--space-xl);
+  }
+
+  .reading__body {
+    margin-top: var(--space-xl);
+    font-family: var(--font-kai);
+    font-size: 1.0625rem;
+    line-height: var(--line-height-chinese);
+  }
+
+  .reading__body :global(p + p) {
+    margin-top: var(--space-md);
+  }
+
+  .reading__body :global(h2) {
+    margin-block: var(--space-xl) var(--space-md);
+    font-size: 1.375rem;
+  }
+
+  .reading__body :global(ul),
+  .reading__body :global(ol) {
+    margin-block: var(--space-md);
+    padding-left: 1.5em;
+  }
+
+  .reading__body :global(a) {
+    text-decoration-color: var(--moss);
+    text-underline-offset: 3px;
+  }
+</style>

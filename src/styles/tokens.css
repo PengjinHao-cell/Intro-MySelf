@@ -1,0 +1,38 @@
+:root {
+  /* Fixed warm-paper palette (first release) */
+  --paper: #f2efe7;
+  --ink: #1d211c;
+  --stone: #77766d;
+  /* Darker stone for small text: --stone itself fails WCAG AA on paper. */
+  --stone-text: #63625a;
+  --moss: #536457;
+  --terracotta: #b65c3a;
+
+  /* Type families */
+  --font-serif-sc: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --font-kai: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', serif;
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+
+  /* Spacing scale */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+
+  /* Reading */
+  --measure: 34rem;
+  --line-height-chinese: 1.9;
+  --line-height-body: 1.7;
+
+  /* Motion */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}

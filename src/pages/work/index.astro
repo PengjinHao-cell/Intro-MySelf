@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import ProjectPreview from '../../components/ProjectPreview.astro'
+import { onlyPublished } from '../../domain/content'
+
+const projects = onlyPublished(await getCollection('projects'))
+
+const categories = ['Computer Vision', 'Deep Learning', 'Robotics', 'Software'] as const
+
+const grouped = categories
+  .map((category) => ({
+    category,
+    entries: projects.filter((entry) => entry.data.category === category),
+  }))
+  .filter((group) => group.entries.length > 0)
+---
+
+<BaseLayout title="Work — Personal Digital Garden" description="Projects in computer vision, deep learning, robotics, and software.">
+  <div class="editorial-grid">
+    <div class="listing">
+      <h1 class="listing__title">Work</h1>
+      <p class="listing__lede">Each project follows the same narrative: overview, question, process, result, what was learned.</p>
+      <div class="listing__groups">
+        {
+          grouped.map(({ category, entries }) => (
+            <section aria-labelledby={`work-${category.toLowerCase().replaceAll(' ', '-')}`}>
+              <h2 id={`work-${category.toLowerCase().replaceAll(' ', '-')}`} class="listing__group-heading">
+                {category}
+              </h2>
+              <div class="listing__group">
+                {entries.map((entry) => <ProjectPreview entry={entry} />)}
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .listing {
+    grid-column: 1 / -1;
+    padding-block: var(--space-2xl) var(--space-4xl);
+  }
+
+  @media (min-width: 768px) {
+    .listing {
+      grid-column: 2 / 11;
+    }
+  }
+
+  .listing__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 500;
+  }
+
+  .listing__lede {
+    margin-top: var(--space-md);
+    font-family: var(--font-kai);
+    color: var(--stone-text);
+    line-height: var(--line-height-chinese);
+  }
+
+  .listing__groups {
+    margin-top: var(--space-2xl);
+  }
+
+  .listing__group-heading {
+    margin-top: var(--space-3xl);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--moss);
+  }
+
+  .listing__group {
+    display: contents;
+  }
+</style>

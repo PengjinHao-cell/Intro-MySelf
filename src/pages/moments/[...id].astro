@@ -1,0 +1,50 @@
+---
+import { getCollection, render } from 'astro:content'
+import ReadingLayout from '../../layouts/ReadingLayout.astro'
+import PhotoFigure from '../../components/PhotoFigure.astro'
+import RelatedLinks from '../../components/RelatedLinks.astro'
+import { onlyPublished } from '../../domain/content'
+import { assertValidRelated, contentMap } from '../../lib/content-map'
+
+export async function getStaticPaths() {
+  const entries = onlyPublished(await getCollection('moments'))
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }))
+}
+
+const { entry } = Astro.props
+const { Content } = await render(entry)
+const { data } = entry
+const dateLabel = data.publishedAt.toISOString().slice(0, 10)
+
+const { byKey, keys } = await contentMap()
+const related = assertValidRelated(data.related, keys, `moments/${entry.id}`)
+---
+
+<ReadingLayout
+  title={dateLabel}
+  description={`Moment from ${dateLabel}`}
+  publishedAt={data.publishedAt}
+  byline={[data.city, ...(data.tags ?? [])].filter((item): item is string => Boolean(item))}
+  breadcrumb={{ href: '/moments', label: 'Moments' }}
+>
+  <Content />
+  {
+    data.images && data.images.length > 0 && (
+      <div class="moment-detail__images">
+        {data.images.map((image) => (
+          <PhotoFigure src={image.src} alt={image.alt} width={image.width} height={image.height} />
+        ))}
+      </div>
+    )
+  }
+  <RelatedLinks refs={related} byKey={byKey} />
+</ReadingLayout>
+
+<style>
+  .moment-detail__images {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+  }
+</style>

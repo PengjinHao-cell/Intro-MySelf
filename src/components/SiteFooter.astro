@@ -1,0 +1,24 @@
+---
+import { getEntry } from 'astro:content'
+
+const site = await getEntry('settings', 'site')
+const displayName = site?.data.displayName ?? 'Personal Digital Garden'
+const year = new Date().getFullYear()
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner editorial-grid">
+    <p>© {year} {displayName}</p>
+    {
+      site?.data.social && site.data.social.length > 0 && (
+        <ul class="site-footer__links">
+          {site.data.social.map((link) => (
+            <li>
+              <a href={link.url} rel="me">{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</footer>

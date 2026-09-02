@@ -1,0 +1,120 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  entry: CollectionEntry<'projects'>
+}
+
+const { entry } = Astro.props
+const { data } = entry
+---
+
+<article class="project-preview" data-editorial-section>
+  <p class="project-preview__meta">
+    <span>{data.category}</span>
+    <span aria-hidden="true">·</span>
+    <span>{data.status}</span>
+  </p>
+  <h3 class="project-preview__title">
+    <a href={`/work/${entry.id}`}>{data.title}</a>
+  </h3>
+  {
+    data.question && <p class="project-preview__question">{data.question}</p>
+  }
+  {
+    data.results && data.results.length > 0 && (
+      <ul class="project-preview__results">
+        {data.results.map((result) => (
+          <li>{result}</li>
+        ))}
+      </ul>
+    )
+  }
+  {
+    data.learning && (
+      <p class="project-preview__learning">
+        <span class="project-preview__learning-label">What I learned</span>
+        {data.learning}
+      </p>
+    )
+  }
+</article>
+
+<style>
+  .project-preview {
+    padding-block: var(--space-xl);
+    border-top: 1px solid var(--stone);
+  }
+
+  .project-preview__meta {
+    display: flex;
+    gap: var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--stone-text);
+  }
+
+  .project-preview__title {
+    margin-top: var(--space-xs);
+  }
+
+  .project-preview__title a {
+    font-family: var(--font-serif-sc);
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .project-preview__title a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--moss);
+    text-underline-offset: 4px;
+  }
+
+  .project-preview__question {
+    margin-top: var(--space-md);
+    font-family: var(--font-kai);
+    font-size: 1.0625rem;
+    line-height: var(--line-height-chinese);
+  }
+
+  .project-preview__question::before {
+    content: 'Question — ';
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--moss);
+  }
+
+  .project-preview__results {
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-preview__results li {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  .project-preview__results li::before {
+    content: '→ ';
+    color: var(--moss);
+  }
+
+  .project-preview__learning {
+    margin-top: var(--space-md);
+    color: var(--stone-text);
+    font-size: 0.9375rem;
+  }
+
+  .project-preview__learning-label {
+    display: block;
+    margin-bottom: var(--space-2xs);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--stone-text);
+  }
+</style>

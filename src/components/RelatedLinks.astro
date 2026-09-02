@@ -1,0 +1,86 @@
+---
+import type { ContentRef } from '../domain/types'
+import type { RelatedTarget } from '../lib/content-map'
+
+interface Props {
+  refs: ContentRef[]
+  byKey: Map<string, RelatedTarget>
+}
+
+const { refs, byKey } = Astro.props
+
+const entries = refs
+  .map((ref) => byKey.get(`${ref.collection}/${ref.id}`))
+  .filter((entry) => entry !== undefined)
+
+const hrefFor = (entry: { id: string; collection: string }): string =>
+  entry.collection === 'writing' ? `/writing/${entry.id}` : entry.collection === 'projects' ? `/work/${entry.id}` : `/${entry.collection}/${entry.id}`
+---
+
+{
+  entries.length > 0 && (
+    <aside class="related-links" aria-label="Related content">
+      <h2 class="related-links__heading">Related</h2>
+      <ul>
+        {
+          entries.map((entry) => (
+            <li>
+              <a href={hrefFor(entry)}>
+                {entry.data.title ?? `${entry.collection}/${entry.id}`}
+                <span class="related-links__date">{entry.data.publishedAt.toISOString().slice(0, 10)}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+  )
+}
+
+<style>
+  .related-links {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--ink);
+  }
+
+  .related-links__heading {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--stone-text);
+  }
+
+  .related-links ul {
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .related-links li + li {
+    margin-top: var(--space-sm);
+  }
+
+  .related-links a {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    font-family: var(--font-serif-sc);
+    text-decoration: none;
+  }
+
+  .related-links a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--moss);
+    text-underline-offset: 4px;
+  }
+
+  .related-links__date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--stone-text);
+    white-space: nowrap;
+  }
+</style>

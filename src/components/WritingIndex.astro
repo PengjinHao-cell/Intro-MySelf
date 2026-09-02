@@ -1,0 +1,98 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  entries: CollectionEntry<'writing'>[]
+}
+
+const { entries } = Astro.props
+---
+
+<ol class="writing-index">
+  {
+    entries.map((entry, index) => {
+      const { data } = entry
+      const dateLabel = data.publishedAt.toISOString().slice(0, 10)
+      return (
+        <li>
+          <a href={`/writing/${entry.id}`}>
+            <span class="writing-index__number">{String(index + 1).padStart(2, '0')}</span>
+            <span class="writing-index__title">{data.title}</span>
+            {
+              data.summary && <span class="writing-index__summary">{data.summary}</span>
+            }
+            <span class="writing-index__meta">
+              <time datetime={dateLabel}>{dateLabel}</time>
+              {
+                data.readingMinutes && <span>{data.readingMinutes} min read</span>
+              }
+              <span>{data.type}</span>
+            </span>
+          </a>
+        </li>
+      )
+    })
+  }
+</ol>
+
+<style>
+  .writing-index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: writing;
+  }
+
+  .writing-index li {
+    border-top: 1px solid var(--stone);
+  }
+
+  .writing-index a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'number title'
+      'number summary'
+      'number meta';
+    column-gap: var(--space-lg);
+    row-gap: var(--space-xs);
+    padding-block: var(--space-lg);
+    text-decoration: none;
+  }
+
+  .writing-index__number {
+    grid-area: number;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--moss);
+  }
+
+  .writing-index__title {
+    grid-area: title;
+    font-family: var(--font-serif-sc);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .writing-index__summary {
+    grid-area: summary;
+    color: var(--stone-text);
+    font-size: 0.9375rem;
+  }
+
+  .writing-index__meta {
+    grid-area: meta;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--stone-text);
+  }
+
+  a:hover .writing-index__title {
+    text-decoration: underline;
+    text-decoration-color: var(--moss);
+    text-underline-offset: 4px;
+  }
+</style>

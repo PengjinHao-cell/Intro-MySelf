@@ -1,0 +1,38 @@
+---
+import { getCollection, render } from 'astro:content'
+import ReadingLayout from '../../layouts/ReadingLayout.astro'
+import RelatedLinks from '../../components/RelatedLinks.astro'
+import { onlyPublished } from '../../domain/content'
+import { assertValidRelated, contentMap } from '../../lib/content-map'
+
+export async function getStaticPaths() {
+  const entries = onlyPublished(await getCollection('writing'))
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }))
+}
+
+const { entry } = Astro.props
+const { Content } = await render(entry)
+const { data } = entry
+
+const byline = [
+  data.type,
+  data.readingMinutes ? `${data.readingMinutes} min read` : null,
+  ...(data.topics ?? []),
+].filter((item): item is string => Boolean(item))
+
+const { byKey, keys } = await contentMap()
+const related = assertValidRelated(data.related, keys, `writing/${entry.id}`)
+---
+
+<ReadingLayout
+  title={data.title}
+  description={data.summary ?? `Writing: ${data.title}`}
+  publishedAt={data.publishedAt}
+  byline={byline}
+  summary={data.summary}
+  cover={data.cover}
+  breadcrumb={{ href: '/writing', label: 'Writing' }}
+>
+  <Content />
+  <RelatedLinks refs={related} byKey={byKey} />
+</ReadingLayout>

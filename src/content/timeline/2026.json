@@ -1,0 +1,10 @@
+{
+  "year": 2026,
+  "items": [
+    {
+      "date": "2026-09-01",
+      "title": "Started this digital garden",
+      "summary": "Set up a local personal digital garden with Astro and Keystatic."
+    }
+  ]
+}

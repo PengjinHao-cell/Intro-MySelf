@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import WritingIndex from '../../components/WritingIndex.astro'
+import { newestFirst, onlyPublished } from '../../domain/content'
+
+const writing = newestFirst(onlyPublished(await getCollection('writing')))
+---
+
+<BaseLayout title="Writing — Personal Digital Garden" description="Long-form essays and focused learning notes.">
+  <div class="editorial-grid">
+    <div class="listing">
+      <h1 class="listing__title">Writing</h1>
+      <p class="listing__lede">Articles and notes on computer vision, machine learning, and whatever is being learned.</p>
+      <div class="listing__index">
+        <WritingIndex entries={writing} />
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .listing {
+    grid-column: 1 / -1;
+    padding-block: var(--space-2xl) var(--space-4xl);
+  }
+
+  @media (min-width: 768px) {
+    .listing {
+      grid-column: 2 / 11;
+    }
+  }
+
+  .listing__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 500;
+  }
+
+  .listing__lede {
+    margin-top: var(--space-md);
+    font-family: var(--font-kai);
+    color: var(--stone-text);
+    line-height: var(--line-height-chinese);
+  }
+
+  .listing__index {
+    margin-top: var(--space-2xl);
+  }
+</style>

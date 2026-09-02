@@ -1,0 +1,145 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { render } from 'astro:content'
+import PhotoFigure from './PhotoFigure.astro'
+
+interface Props {
+  entry: CollectionEntry<'moments'>
+}
+
+const { entry } = Astro.props
+const { Content } = await render(entry)
+const { data } = entry
+const dateLabel = data.publishedAt.toISOString().slice(0, 10)
+const images = data.images ?? []
+---
+
+<article class:list={['moment-entry', images.length > 0 && 'moment-entry--has-images']} data-editorial-section>
+  <p class="moment-entry__meta">
+    <a class="moment-entry__permalink" href={`/moments/${entry.id}`}>
+      <time datetime={dateLabel}>{dateLabel}</time>
+    </a>
+    {
+      data.city && (
+        <>
+          <span aria-hidden="true">·</span>
+          <span>{data.city}</span>
+        </>
+      )
+    }
+    {
+      data.tags?.map((tag) => <span class="moment-entry__tag">{tag}</span>)
+    }
+  </p>
+  <div class:list={['moment-entry__body', `moment-entry__body--images-${images.length}`]}>
+    <Content />
+  </div>
+  {
+    images.length > 0 && (
+      <div class:list={['moment-entry__images', `moment-entry__images--count-${images.length}`]}>
+        {images.map((image) => (
+          <PhotoFigure src={image.src} alt={image.alt} width={image.width} height={image.height} />
+        ))}
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .moment-entry {
+    padding-block: var(--space-xl);
+    border-top: 1px solid var(--stone);
+  }
+
+  .moment-entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--stone-text);
+  }
+
+  .moment-entry__permalink {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .moment-entry__permalink:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .moment-entry__tag::before {
+    content: '#';
+  }
+
+  .moment-entry__body {
+    font-family: var(--font-kai);
+    font-size: 1.0625rem;
+    line-height: var(--line-height-chinese);
+  }
+
+  .moment-entry__body :global(p + p) {
+    margin-top: var(--space-md);
+  }
+
+  /* Adaptive image compositions: rhythm varies with image count */
+  .moment-entry__images {
+    margin-top: var(--space-lg);
+  }
+
+  .moment-entry__images--count-1 {
+    max-width: 42rem;
+  }
+
+  .moment-entry__images--count-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .moment-entry__images--count-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .moment-entry__images--count-4,
+  .moment-entry__images--count-5,
+  .moment-entry__images--count-6,
+  .moment-entry__images--count-7,
+  .moment-entry__images--count-8,
+  .moment-entry__images--count-9 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  @media (min-width: 768px) {
+    .moment-entry__images--count-2 {
+      grid-template-columns: 7fr 5fr;
+    }
+
+    .moment-entry__images--count-3 {
+      grid-template-columns: 8fr 4fr;
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .moment-entry__images--count-3 :global(.photo-figure:first-child) {
+      grid-row: 1 / span 2;
+    }
+
+    .moment-entry__images--count-4,
+    .moment-entry__images--count-5,
+    .moment-entry__images--count-6,
+    .moment-entry__images--count-7,
+    .moment-entry__images--count-8,
+    .moment-entry__images--count-9 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,221 @@
+---
+import { getCollection, render } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PhotoFigure from '../../components/PhotoFigure.astro'
+import { onlyPublished } from '../../domain/content'
+
+export async function getStaticPaths() {
+  const entries = onlyPublished(await getCollection('projects'))
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }))
+}
+
+const { entry } = Astro.props
+const { Content } = await render(entry)
+const { data } = entry
+
+const fmt = (date: Date) => date.toISOString().slice(0, 10)
+---
+
+<BaseLayout title={`${data.title} — Personal Digital Garden`} description={`Project: ${data.title}`}>
+  <div class="editorial-grid">
+    <article class="project">
+      <nav class="project__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/work">Work</a>
+      </nav>
+      <p class="project__meta">
+        <span>{data.category}</span>
+        <span aria-hidden="true">·</span>
+        <span>{data.status}</span>
+        {
+          data.startDate && (
+            <>
+              <span aria-hidden="true">·</span>
+              <time datetime={fmt(data.startDate)}>{fmt(data.startDate)}</time>
+              {
+                data.endDate && <span aria-hidden="true">–</span>
+              }
+            </>
+          )
+        }
+        {
+          data.endDate && <time datetime={fmt(data.endDate)}>{fmt(data.endDate)}</time>
+        }
+      </p>
+      <h1 class="project__title">{data.title}</h1>
+
+      <section aria-labelledby="project-overview">
+        <h2 id="project-overview">Overview</h2>
+        <div class="project__body">
+          <Content />
+        </div>
+      </section>
+
+      {
+        data.question && (
+          <section aria-labelledby="project-question">
+            <h2 id="project-question">Question</h2>
+            <p class="project__question">{data.question}</p>
+          </section>
+        )
+      }
+
+      {
+        data.process && (
+          <section aria-labelledby="project-process">
+            <h2 id="project-process">Process</h2>
+            <p>{data.process}</p>
+          </section>
+        )
+      }
+
+      {
+        data.results && data.results.length > 0 && (
+          <section aria-labelledby="project-result">
+            <h2 id="project-result">Result</h2>
+            <ul class="project__results">
+              {data.results.map((result) => <li>{result}</li>)}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        data.learning && (
+          <section aria-labelledby="project-learning">
+            <h2 id="project-learning">What I Learned</h2>
+            <p>{data.learning}</p>
+          </section>
+        )
+      }
+
+      {
+        data.cover && (
+          <section aria-labelledby="project-gallery">
+            <h2 id="project-gallery">Gallery</h2>
+            <PhotoFigure src={data.cover.src} alt={data.cover.alt} width={data.cover.width} height={data.cover.height} />
+          </section>
+        )
+      }
+
+      {
+        data.repository && (
+          <section aria-labelledby="project-repository">
+            <h2 id="project-repository">Repository</h2>
+            <p class="project__repo">
+              <a href={data.repository}>{data.repository}</a>
+            </p>
+          </section>
+        )
+      }
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .project {
+    grid-column: 1 / -1;
+    max-width: var(--measure);
+    padding-block: var(--space-2xl) var(--space-4xl);
+  }
+
+  @media (min-width: 768px) {
+    .project {
+      grid-column: 2 / 10;
+    }
+  }
+
+  .project__breadcrumb {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--stone-text);
+  }
+
+  .project__breadcrumb a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .project__breadcrumb a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .project__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--stone-text);
+  }
+
+  .project__title {
+    margin-top: var(--space-md);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+  }
+
+  .project section {
+    margin-top: var(--space-2xl);
+  }
+
+  .project h2 {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--moss);
+  }
+
+  .project__body {
+    margin-top: var(--space-md);
+    font-family: var(--font-kai);
+    font-size: 1.0625rem;
+    line-height: var(--line-height-chinese);
+  }
+
+  .project__body :global(p + p) {
+    margin-top: var(--space-md);
+  }
+
+  .project section p {
+    margin-top: var(--space-md);
+  }
+
+  .project__question {
+    font-family: var(--font-kai);
+    font-size: 1.0625rem;
+    line-height: var(--line-height-chinese);
+  }
+
+  .project__results {
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project__results li {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  .project__results li::before {
+    content: '→ ';
+    color: var(--moss);
+  }
+
+  .project__repo a {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    overflow-wrap: anywhere;
+    text-decoration-color: var(--moss);
+    text-underline-offset: 3px;
+  }
+</style>

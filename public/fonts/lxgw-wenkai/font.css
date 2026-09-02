@@ -1,0 +1,9 @@
+/* LXGW WenKai, subset to GB2312 + ASCII + CJK punctuation (OFL-1.1).
+   Characters outside the subset fall back to the next family in the stack. */
+@font-face {
+  font-family: 'LXGW WenKai';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./LXGWWenKai-Regular.woff2') format('woff2');
+}

@@ -1,0 +1,21 @@
+{
+  "displayName": "Peng Jinhao",
+  "intro": "I started with cameras. Then I became curious about how machines see.",
+  "now": {
+    "month": "2026-09",
+    "learning": "Computer vision fundamentals",
+    "building": "This digital garden",
+    "reading": "Sample book — replace me",
+    "location": "Nanjing"
+  },
+  "social": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/your-username"
+    }
+  ],
+  "homepage": {
+    "selectedProjects": ["mini-deepid", "cv-lab", "robotics-experiments"],
+    "selectedPhotos": []
+  }
+}

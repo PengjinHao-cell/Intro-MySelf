@@ -1,0 +1,36 @@
+---
+import { getCollection, render } from 'astro:content'
+import ReadingLayout from '../../layouts/ReadingLayout.astro'
+import PhotoFigure from '../../components/PhotoFigure.astro'
+import { onlyPublished } from '../../domain/content'
+
+export async function getStaticPaths() {
+  const entries = onlyPublished(await getCollection('photos'))
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }))
+}
+
+const { entry } = Astro.props
+const { Content } = await render(entry)
+const { data } = entry
+
+const byline = [data.category, data.city, data.camera, data.lens].filter(
+  (item): item is string => Boolean(item),
+)
+---
+
+<ReadingLayout
+  title={data.title}
+  description={data.explanation ?? `Photo story: ${data.title}`}
+  publishedAt={data.publishedAt}
+  byline={byline}
+  summary={data.explanation}
+  cover={data.images[0]}
+  breadcrumb={{ href: '/photos', label: 'Photos' }}
+>
+  <Content />
+  {
+    data.images.slice(1).map((image) => (
+      <PhotoFigure src={image.src} alt={image.alt} width={image.width} height={image.height} />
+    ))
+  }
+</ReadingLayout>

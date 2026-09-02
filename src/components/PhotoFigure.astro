@@ -1,0 +1,47 @@
+---
+interface Props {
+  src: string
+  alt: string
+  width?: number
+  height?: number
+  caption?: string
+  eager?: boolean
+  class?: string
+}
+
+const { src, alt, width, height, caption, eager = false, class: className } = Astro.props
+---
+
+<figure class:list={['photo-figure', className]}>
+  <img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : 'auto'}
+  />
+  {
+    caption && (
+      <figcaption class="photo-figure__caption">{caption}</figcaption>
+    )
+  }
+</figure>
+
+<style>
+  .photo-figure {
+    margin: 0;
+  }
+
+  .photo-figure img {
+    width: 100%;
+    height: auto;
+  }
+
+  .photo-figure__caption {
+    margin-top: var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--stone-text);
+  }
+</style>

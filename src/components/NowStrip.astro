@@ -1,0 +1,83 @@
+---
+import { getEntry } from 'astro:content'
+
+const site = await getEntry('settings', 'site')
+const now = site?.data.now
+
+const fields = [
+  { key: 'learning', label: 'Learning' },
+  { key: 'building', label: 'Building' },
+  { key: 'reading', label: 'Reading' },
+  { key: 'location', label: 'Location' },
+] as const
+---
+
+{
+  now && (
+    <section class="now-strip" data-editorial-section aria-labelledby="now-heading">
+      <h2 id="now-heading">Now</h2>
+      {
+        now.month && (
+          <p class="now-strip__month">{now.month}</p>
+        )
+      }
+      <dl class="now-strip__list">
+        {
+          fields.map(({ key, label }) =>
+            now[key] ? (
+              <div class="now-strip__item">
+                <dt>{label}</dt>
+                <dd>{now[key]}</dd>
+              </div>
+            ) : null,
+          )
+        }
+      </dl>
+    </section>
+  )
+}
+
+<style>
+  .now-strip {
+    margin-block: var(--space-3xl);
+    padding-block: var(--space-lg);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .now-strip h2 {
+    margin-bottom: var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--stone-text);
+  }
+
+  .now-strip__month {
+    margin-bottom: var(--space-lg);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .now-strip__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-lg);
+    margin: 0;
+  }
+
+  .now-strip__item dt {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--stone-text);
+  }
+
+  .now-strip__item dd {
+    margin: var(--space-2xs) 0 0;
+    font-family: var(--font-serif-sc);
+  }
+</style>
