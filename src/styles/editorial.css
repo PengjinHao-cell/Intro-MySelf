@@ -83,6 +83,8 @@
 }
 
 .mobile-nav__toggle {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   padding: var(--space-xs) var(--space-md);
   border: 1px solid var(--ink);
   background: transparent;

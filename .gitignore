@@ -18,5 +18,9 @@ playwright/.cache/
 .env
 .env.*
 
+# Regenerable tool installs (npx impeccable install)
+.claude/skills/
+.agents/
+
 # OS files
 .DS_Store
