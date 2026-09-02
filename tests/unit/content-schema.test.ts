@@ -1,7 +1,30 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { momentSchema, photoSchema, projectSchema } from '../../src/content.config'
 
 describe('content schemas', () => {
+  it('uses the blank-paper placeholder for every bundled sample image', () => {
+    const sampleFiles = [
+      'src/content/photos/city-light.mdx',
+      'src/content/moments/evening-window.mdx',
+      'src/content/moments/first-reproduction.mdx',
+      'src/content/writing/validation-loss.mdx',
+      'src/content/projects/mini-deepid.mdx',
+    ]
+
+    for (const sampleFile of sampleFiles) {
+      const content = readFileSync(new URL(`../../${sampleFile}`, import.meta.url), 'utf8')
+      const imageSources = [...content.matchAll(/^\s+(?:-\s+)?src:\s+(.+)$/gm)].map(
+        (match) => match[1],
+      )
+
+      expect(imageSources.length, `${sampleFile} should contain a sample image`).toBeGreaterThan(0)
+      expect(imageSources, sampleFile).toEqual(
+        new Array(imageSources.length).fill('/images/placeholders/blank-paper.svg'),
+      )
+    }
+  })
+
   it('accepts a minimal valid moment', () => {
     expect(
       momentSchema.safeParse({ body: 'test', publishedAt: new Date(), draft: false, images: [] })

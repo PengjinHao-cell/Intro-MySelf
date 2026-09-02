@@ -1,5 +1,5 @@
 {
-  "displayName": "Peng Jinhao",
+  "displayName": "Peng Minghao",
   "intro": "I started with cameras. Then I became curious about how machines see.",
   "now": {
     "month": "2026-09",
@@ -11,11 +11,15 @@
   "social": [
     {
       "label": "GitHub",
-      "url": "https://github.com/your-username"
+      "url": "https://github.com/PengjinHao-cell"
     }
   ],
   "homepage": {
-    "selectedProjects": ["mini-deepid", "cv-lab", "robotics-experiments"],
+    "selectedProjects": [
+      "mini-deepid",
+      "cv-lab",
+      "robotics-experiments"
+    ],
     "selectedPhotos": []
   }
 }
